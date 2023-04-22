@@ -1,38 +1,117 @@
-.App {
-  text-align: center;
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background-color: #333;
+  color: #fffefe;
+}
+:root {
+  /* --slider-padding: 5rem; */
+  --handle-size: 3rem;
+  --img-gap: 0.25rem;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.container {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  overflow: hidden;
+}
+
+.slider {
+  --items-per-screen: 4;
+  --slider-index: 0;
+  flex-grow: 1;
+  display: flex;
+  margin: 0 var(--img-gap);
+  transform: translateX(calc(var(--slider-index) * -100%));
+  transition: transform 0.3s ease-in-out;
+}
+
+.slider > img {
+  flex: 0 0 calc(100% / var(--items-per-screen));
+  max-width: calc(100% / var(--items-per-screen));
+  padding: var(--img-gap);
+  aspect-ratio: 16 / 9;
+  border-radius: 1rem;
+}
+
+.handle {
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: var(--handle-size);
+  border: none;
+  border-radius: 1rem;
+  z-index: 10;
+  margin: var(--img-gap) 0;
+  padding: 0 0.5rem;
+  cursor: pointer;
+  font-size: 4rem;
   color: white;
+  transform: scale(1);
+  background-color: rgba(255, 255, 255, 0.25);
+  transition: all 0.3s ease-in-out;
 }
 
-.App-link {
-  color: #61dafb;
+.left-handle {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+.right-handle {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.handle:hover {
+  font-size: 4.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.left-handle:hover::after {
+  content: "\2039";
+}
+
+.right-handle:hover::after {
+  content: "\203A";
+}
+
+.row {
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 calc(var(--handle-size) + (var(--img-gap) * 2));
+}
+
+.title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.progress-bar {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.progress-item {
+  flex: 0 0 1.5rem;
+  min-width: 1.5rem;
+  height: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.progress-item.active {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+@media screen and (max-width: 1000px) {
+  .slider {
+    --items-per-screen: 4;
   }
 }
