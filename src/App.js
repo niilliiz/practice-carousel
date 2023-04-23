@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import IMGList from "./components/img";
 
@@ -37,8 +37,6 @@ function App() {
     }
   };
 
-  const handleResize = () => {};
-
   function calculateProgressBar() {
     const currentSliderIndex = parseInt(
       getComputedStyle(sliderRef.current).getPropertyValue("--slider-index")
@@ -63,17 +61,43 @@ function App() {
     setrenderProgressBar(renderItems);
   }
 
-  useEffect(() => {
-    document.addEventListener("resize", handleResize);
-
-    calculateProgressBar();
-
-    return () => {
-      document.removeEventListener("resize", handleResize);
+  function throttleWrapper(cb, delay = 1000) {
+    let shouldWait = false;
+    let waitingArgs;
+    const timeoutFunc = () => {
+      if (waitingArgs == null) {
+        shouldWait = false;
+      } else {
+        cb(...waitingArgs);
+        waitingArgs = null;
+        setTimeout(timeoutFunc, delay);
+      }
     };
+
+    return (...args) => {
+      if (shouldWait) {
+        waitingArgs = args;
+        return;
+      }
+
+      cb(...args);
+      shouldWait = true;
+      setTimeout(timeoutFunc, delay);
+    };
+  }
+
+  useEffect(() => {
+    calculateProgressBar();
   }, []);
 
-  console.dir(renderedProgressBar);
+  useEffect(() => {
+    const throttleProgressBar = throttleWrapper(calculateProgressBar);
+    window.addEventListener("resize", throttleProgressBar);
+
+    return () => {
+      window.removeEventListener("resize", throttleProgressBar);
+    };
+  });
 
   return (
     <div className="row">
